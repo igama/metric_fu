@@ -25,10 +25,10 @@ Gem::Specification.new do |s|
     "reek"                  => ["= 1.2.12"],
     "metric_fu-roodi"       => [">= 2.2.0"],
     "rails_best_practices"  => ["= 1.13.2"],
-    "rcov"                  => ["~> 0.8"],
+    #"rcov"                  => ["~> 0.8"],
     # still using rcov in ruby 1.9 till some errors are fleshed out
-    # "simplecov"             => [">= 0.5.4"],
-    # "simplecov-rcov"        => [">= 0.2.3"],
+    "simplecov"             => [">= 0.5.4"],
+    "simplecov-rcov"        => [">= 0.2.3"],
     "japgolly-Saikuro"      => [">= 1.1.1.0"],
     "churn"                 => ["= 0.0.25"],
     "sexp_processor"        => ["~> 3.0.3"], # required because of churn, flog, reek 1.2.12, ripper_ruby_parser 0.0.8
