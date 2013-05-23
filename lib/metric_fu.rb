@@ -1,6 +1,6 @@
 module MetricFu
   APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__),'..'))
-  LIB_ROOT = File.join(APP_ROOT,'lib')
+  LIB_ROOT = File.join(APP_ROOT,'lib/metric_fu')
   @loaded_files = []
   class << self
     attr_reader :loaded_files
@@ -42,10 +42,43 @@ module MetricFu
   end
   def self.configure
     MetricFu.lib_require { 'configuration' }
-    Dir.glob(File.join(MetricFu.metrics_dir, '**/init.rb')).each do |file|
+    init_files = Dir.glob(File.join(MetricFu.metrics_dir, '**/init.rb')).reject do |file|
+      if file =~ /rcov/o
+        MetricFu.configuration.mf_debug("rcov is not available. See README")
+        true
+      elsif MetricFu.configuration.mri?
+        false
+      elsif file =~ /cane/o
+        MetricFu.configuration.mf_debug("Cane is only available in MRI. It requires ripper")
+        true
+      elsif file =~ /flog/o
+        MetricFu.configuration.mf_debug("Flog is only available in MRI. It requires ripper")
+        true
+      elsif file =~ /rails_best_practices/o
+        MetricFu.configuration.mf_debug("Rails Best Practices only available in MRI. It requires ripper")
+        true
+      else
+        false
+      end
+    end
+    init_files.each do |file|
       load file
     end
     MetricFu.configuration
+  end
+  def self.mri_only_metrics
+    if MetricFu.configuration.mri?
+      []
+    else
+      [:cane, :flog, :rails_best_practices]
+    end
+  end
+  def self.run_rcov
+    load File.join(MetricFu.metrics_dir, 'rcov/init.rb')
+  end
+  def self.skip_rcov
+    MetricFu.metrics -= [:rcov]
+    MetricFu.graphs  -= [:rcov]
   end
   class << self
     %w(scratch output _data).each do |dir|
